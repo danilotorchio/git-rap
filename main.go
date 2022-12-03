@@ -32,13 +32,13 @@ func Execute(project, branch_origin, task_type, task_ref string) {
 	config := models.AppConfig{}
 	config.Load()
 
-	idx := slices.IndexFunc(config.Projects, func(c models.Project) bool { return c.Name == project })
+	idx := slices.IndexFunc(config.Repositories, func(c models.Repository) bool { return c.Name == project })
 	if idx < 0 {
 		helpers.Warning("Project not founded")
 		os.Exit(1)
 	}
 
-	pConf := config.Projects[idx]
+	pConf := config.Repositories[idx]
 
 	tasks.GiteaCreateDevBranchs(pConf, branch_origin, task_type, task_ref)
 	tasks.RedmineIssueUpdateDevBranchs(pConf, branch_origin, task_type, task_ref)

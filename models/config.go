@@ -10,15 +10,27 @@ import (
 	"runtime"
 )
 
-type Project struct {
-	Name     string `json:"name"`
-	Url      string `json:"url"`
+type AuthCreds struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
+type GiteaRepository struct {
+	Url        string    `json:"url"`
+	Owner      string    `json:"owner"`
+	Repository string    `json:"repository"`
+	Auth       AuthCreds `json:"auth"`
+}
+
+type Repository struct {
+	Name      string          `json:"name"`
+	Url       string          `json:"url"`
+	Auth      AuthCreds       `json:"auth"`
+	GiteaRepo GiteaRepository `json:"giteaRepo"`
+}
+
 type AppConfig struct {
-	Projects []Project `json:"projects"`
+	Repositories []Repository `json:"repositories"`
 }
 
 func AppDir() string {
@@ -35,17 +47,28 @@ func ConfigFilePath() string {
 func InitializeConfig() {
 	var config *AppConfig
 
-	if !helpers.CheckIfDirectoryIsEmpty(AppDir()) {
+	if helpers.CheckIfDirectoryExists(AppDir()) {
 		config = &AppConfig{}
 		config.Load()
 	} else {
 		config = &AppConfig{
-			Projects: []Project{
+			Repositories: []Repository{
 				{
-					Name:     "example",
-					Url:      "https://example.com/repo.git",
-					Username: "cuca",
-					Password: "VaiTePegar",
+					Name: "example",
+					Url:  "https://example.com/repo.git",
+					Auth: AuthCreds{
+						Username: "username",
+						Password: "password",
+					},
+					GiteaRepo: GiteaRepository{
+						Url:        "http://gitea.example.com",
+						Owner:      "organization_name",
+						Repository: "repository_name",
+						Auth: AuthCreds{
+							Username: "username",
+							Password: "password",
+						},
+					},
 				},
 			},
 		}
