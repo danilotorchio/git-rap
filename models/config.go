@@ -24,7 +24,8 @@ type GiteaRepository struct {
 
 type Repository struct {
 	Name      string          `json:"name"`
-	Url       string          `json:"url"`
+	RemoteUrl string          `json:"remoteUrl"`
+	LocalPath string          `json:"localPath"`
 	Auth      AuthCreds       `json:"auth"`
 	GiteaRepo GiteaRepository `json:"giteaRepo"`
 }
@@ -54,8 +55,9 @@ func InitializeConfig() {
 		config = &AppConfig{
 			Repositories: []Repository{
 				{
-					Name: "example",
-					Url:  "https://example.com/repo.git",
+					Name:      "example",
+					RemoteUrl: "https://example.com/repo.git",
+					LocalPath: "/path/to/repository",
 					Auth: AuthCreds{
 						Username: "username",
 						Password: "password",
