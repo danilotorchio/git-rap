@@ -39,12 +39,12 @@ func AppDir() string {
 	return fmt.Sprintf("%s/.rpa-git", user.HomeDir)
 }
 
-func ConfigFilePath() string {
-	return fmt.Sprintf("%s/config.json", AppDir())
+func RepositoriesDir() string {
+	return fmt.Sprintf("%s/repositories", AppDir())
 }
 
-func RepositoresPath() string {
-	return fmt.Sprintf("%s/repositories", AppDir())
+func ConfigFilePath() string {
+	return fmt.Sprintf("%s/config.json", AppDir())
 }
 
 func (m *AppConfig) Load() {
@@ -56,8 +56,8 @@ func (m *AppConfig) Load() {
 }
 
 func (m *AppConfig) Save() {
-	appDir := AppDir()
-	helpers.CreateDirectory(appDir)
+	helpers.CreateDirectory(AppDir())
+	helpers.CreateDirectory(RepositoriesDir())
 
 	filePath := ConfigFilePath()
 	fileContent, err := json.MarshalIndent(m, "", "    ")

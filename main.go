@@ -15,13 +15,13 @@ func main() {
 
 	switch op {
 	case "init":
-		helpers.CheckArgs("init", "<action = config | repo>")
+		helpers.CheckArgs("init", "<action = config | repos>")
 		initOp := os.Args[2]
 
 		switch initOp {
 		case "config":
 			tasks.InitializeConfig()
-		case "repo":
+		case "repos":
 			tasks.GitInitRepos()
 		default:
 			helpers.Warning("Invalid init action")
