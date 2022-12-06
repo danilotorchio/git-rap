@@ -1,10 +1,10 @@
 package tasks
 
 import (
+	"fmt"
 	"rpa-git/clients"
 	"rpa-git/helpers"
 	"rpa-git/models"
-	"strings"
 	"sync"
 )
 
@@ -15,14 +15,11 @@ func GitInitRepos() {
 	var wg sync.WaitGroup
 
 	for _, repo := range config.Repositories {
-		origin, gitea, name, username := repo.OriginUrl, repo.GiteaUrl, repo.Name, repo.Auth.Username
-		var password string
+		origin_url, name, username := repo.OriginUrl, repo.Name, repo.Auth.Username
+		password := helpers.IfThen(repo.Auth.Token, repo.Auth.Password)
 
-		if strings.TrimSpace(repo.Auth.Token) != "" {
-			password = repo.Auth.Token
-		} else {
-			password = repo.Auth.Password
-		}
+		gitea_url, owner, repository := repo.GiteaUrl, repo.GiteaRepo.Owner, repo.GiteaRepo.Repository
+		gitea_repo := fmt.Sprintf("%s/%s/%s.git", gitea_url, owner, repository)
 
 		wg.Add(1)
 		go func(origin, gitea, name, username, password string) {
@@ -31,9 +28,9 @@ func GitInitRepos() {
 			git := clients.GitCreateClient()
 			helpers.Warning("git clone %s", name)
 
-			git.ExecuteCloneCommand(origin, gitea, name, username, password)
+			git.Clone(origin, gitea, name, username, password)
 			helpers.Info("%s was cloned", name)
-		}(origin, gitea, name, username, password)
+		}(origin_url, gitea_repo, name, username, password)
 	}
 
 	wg.Wait()

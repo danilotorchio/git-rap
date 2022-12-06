@@ -28,3 +28,11 @@ func CheckIfEmpty(value, msg string) {
 		os.Exit(1)
 	}
 }
+
+func IfThen(value, elseValue string) string {
+	if strings.TrimSpace(value) != "" {
+		return value
+	}
+
+	return elseValue
+}
