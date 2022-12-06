@@ -8,8 +8,8 @@ import (
 )
 
 func GiteaCreateDevBranchs(conf models.Repository, branch_origin, task_type, task_ref string) {
-	git := clients.GitCreateClient(conf.LocalPath)
-	gitea := clients.GiteaCreateClient(conf.GiteaRepo)
+	git := clients.GitCreateClient()
+	gitea := clients.GiteaCreateClient(conf.GiteaUrl, conf.GiteaRepo)
 
 	helpers.Info("git checkout %s", branch_origin)
 	git.ExecuteCommand("checkout", branch_origin)

@@ -4,19 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"os/user"
 	"rpa-git/helpers"
-	"runtime"
 )
 
 type AuthCreds struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Token    string `json:"token"`
 }
 
 type GiteaRepository struct {
-	Url        string    `json:"url"`
 	Owner      string    `json:"owner"`
 	Repository string    `json:"repository"`
 	Auth       AuthCreds `json:"auth"`
@@ -24,8 +22,8 @@ type GiteaRepository struct {
 
 type Repository struct {
 	Name      string          `json:"name"`
-	RemoteUrl string          `json:"remoteUrl"`
-	LocalPath string          `json:"localPath"`
+	OriginUrl string          `json:"originUrl"`
+	GiteaUrl  string          `json:"giteaUrl"`
 	Auth      AuthCreds       `json:"auth"`
 	GiteaRepo GiteaRepository `json:"giteaRepo"`
 }
@@ -45,50 +43,8 @@ func ConfigFilePath() string {
 	return fmt.Sprintf("%s/config.json", AppDir())
 }
 
-func InitializeConfig() {
-	var config *AppConfig
-
-	if helpers.CheckIfDirectoryExists(AppDir()) {
-		config = &AppConfig{}
-		config.Load()
-	} else {
-		config = &AppConfig{
-			Repositories: []Repository{
-				{
-					Name:      "example",
-					RemoteUrl: "https://example.com/repo.git",
-					LocalPath: "/path/to/repository",
-					Auth: AuthCreds{
-						Username: "username",
-						Password: "password",
-					},
-					GiteaRepo: GiteaRepository{
-						Url:        "http://gitea.example.com",
-						Owner:      "organization_name",
-						Repository: "repository_name",
-						Auth: AuthCreds{
-							Username: "username",
-							Password: "password",
-						},
-					},
-				},
-			},
-		}
-
-		config.Save()
-	}
-
-	var cmd *exec.Cmd
-	params := []string{ConfigFilePath()}
-
-	if runtime.GOOS == "darwin" {
-		cmd = exec.Command("open", params...)
-	} else {
-		cmd = exec.Command("Notepad", params...)
-	}
-
-	err := cmd.Run()
-	helpers.CheckIfError(err)
+func RepositoresPath() string {
+	return fmt.Sprintf("%s/repositories", AppDir())
 }
 
 func (m *AppConfig) Load() {

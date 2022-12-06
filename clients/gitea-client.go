@@ -11,8 +11,8 @@ type GiteaClient struct {
 	client *gitea.Client
 }
 
-func GiteaCreateClient(repo models.GiteaRepository) *GiteaClient {
-	client, err := gitea.NewClient(repo.Url)
+func GiteaCreateClient(url string, repo models.GiteaRepository) *GiteaClient {
+	client, err := gitea.NewClient(url)
 	helpers.CheckIfError(err)
 
 	client.SetBasicAuth(repo.Auth.Username, repo.Auth.Password)

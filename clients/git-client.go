@@ -4,22 +4,23 @@ import (
 	"os"
 	"os/exec"
 	"rpa-git/helpers"
+	"rpa-git/models"
 )
 
 type GitClient struct {
-	RepositoryPath string `json:"basePath"`
+	RepositoriesPath string `json:"basePath"`
 }
 
-func GitCreateClient(path string) *GitClient {
+func GitCreateClient() *GitClient {
 	return &GitClient{
-		RepositoryPath: path,
+		RepositoriesPath: models.RepositoresPath(),
 	}
 }
 
 func (c GitClient) ExecuteCommand(args ...string) {
-	helpers.CheckIfEmpty(c.RepositoryPath, "Invalid repository")
+	helpers.CheckIfEmpty(c.RepositoriesPath, "Invalid repository")
 
-	params := append([]string{"-C", c.RepositoryPath}, args...)
+	params := append([]string{"-C", c.RepositoriesPath}, args...)
 
 	cmd := exec.Command("git", params...)
 	cmd.Stdout = os.Stdout

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"rpa-git/helpers"
 	"rpa-git/models"
@@ -11,46 +10,37 @@ import (
 )
 
 func main() {
-	helpers.CheckArgs("<op = help | config | init | run>")
+	helpers.CheckArgs("<op = init | run>")
 	op := os.Args[1]
 
 	switch op {
-	case "help":
-		Help()
-	case "config":
-		InitializeConfig()
 	case "init":
-		InitializeRepos()
+		helpers.CheckArgs("init", "<action = config | repo>")
+		initOp := os.Args[2]
+
+		switch initOp {
+		case "config":
+			tasks.InitializeConfig()
+		case "repo":
+			tasks.GitInitRepos()
+		default:
+			helpers.Warning("Invalid init action")
+			os.Exit(1)
+		}
 	case "run":
-		helpers.CheckArgs("<op>", "<project>", "<branch_origin>", "<task_type>", "<task_ref>")
+		helpers.CheckArgs("run", "<project>", "<branch_origin>", "<task_type>", "<task_ref>")
 		project, branch_origin, task_type, task_ref := os.Args[2], os.Args[3], os.Args[4], os.Args[5]
 
-		Run(project, branch_origin, task_type, task_ref)
+		execute(project, branch_origin, task_type, task_ref)
 	default:
 		helpers.Warning("Invalid option")
+		os.Exit(1)
 	}
 
 	os.Exit(0)
 }
 
-func Help() {
-	helpers.Warning("\nAvaliable options:")
-
-	fmt.Printf("\n- %sDisplay this help section.\n", helpers.GetInfo("help"))
-	fmt.Printf("\n- %sInitialize de app config file.\n", helpers.GetInfo("config"))
-	fmt.Printf("\n- %sInitialize the repositories configured in the app config file.\n", helpers.GetInfo("init"))
-	fmt.Printf("\n- %sRun the automation.\n", helpers.GetInfo("run"))
-}
-
-func InitializeConfig() {
-	models.InitializeConfig()
-}
-
-func InitializeRepos() {
-	tasks.GitInitRepos()
-}
-
-func Run(project, branch_origin, task_type, task_ref string) {
+func execute(project, branch_origin, task_type, task_ref string) {
 	config := models.AppConfig{}
 	config.Load()
 
